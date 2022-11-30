@@ -1,13 +1,21 @@
-import {  useState } from 'react'
+import { useState } from 'react'
 import { Formik, Form, Field, ErrorMessage } from 'formik'
 import * as Yup from 'yup'
 import dayjs from 'dayjs'
+import { v4 } from 'uuid'
+import {
+  ref,
+  uploadBytes,
+  getDownloadURL,
+} from 'firebase/storage'
 
 import './TodoForm.css'
 import TextAreaField from '../TextAreaField'
+import { storage } from '../../firebase'
 
 export default function TodoForm({ submitHandler, submitText, todo }) {
-  const [fileField, setFileField] = useState('')
+  const [fileField, setFileField] = useState(null)
+  const [fileLink, setFileLink] = useState('')
 
 
   const NewTodoSchema = Yup.object().shape({
@@ -21,9 +29,12 @@ export default function TodoForm({ submitHandler, submitText, todo }) {
   })
 
   const submit = (values, { resetForm }) => {
-    values.file = fileField
+    console.log(fileLink)
+    values.file = fileLink
     submitHandler(values, todo?.id)
+
     if (!todo) {
+      setFileField(null)
       resetForm({ values: '' })
     }
   }
@@ -34,7 +45,13 @@ export default function TodoForm({ submitHandler, submitText, todo }) {
       return
     }
     const file = files[0]
-    setFileField(file)
+    setFileField((prev) => file)
+    const imageRef = ref(storage, `images/${file.name + v4()}`)
+    uploadBytes(imageRef, file).then((snapshot) => {
+      getDownloadURL(snapshot.ref).then((url) => {
+        setFileLink(() => url)
+      })
+    })
   }
 
   return (
@@ -42,8 +59,8 @@ export default function TodoForm({ submitHandler, submitText, todo }) {
       initialValues={{
         title: todo?.title || '',
         description: todo?.description || '',
-        completion: todo?.completion || dayjs().format('YYYY-MM-DD'),
-        file: fileField?.name || '',
+        completion:
+          todo?.completion || dayjs().add(1, 'day').format('YYYY-MM-DD'),
       }}
       validationSchema={NewTodoSchema}
       onSubmit={submit}
@@ -73,17 +90,22 @@ export default function TodoForm({ submitHandler, submitText, todo }) {
             <Field id="completion" type="date" name="completion" />
           </div>
           <div className="form__group">
-            <label htmlFor="file" className="form__file-label button">
+            <label htmlFor={`file-${Date.now()}`} className="form__file-label button">
               {!fileField ? 'Choose file' : fileField.name}
             </label>
-            <Field
+            <input
               type="file"
               name="file"
-              id="file"
-              accept="image/*,.pdf, .doc, audio/*"
+              id={`file-${Date.now()}`}
+              accept="image/*"
               className="form__file-input"
               onChange={chooseFile}
             />
+            {todo?.file && (
+              <a href={todo.file} target="blank">
+                Download
+              </a>
+            )}
           </div>
           <div className="form__group">
             <button type="submit" className="button">

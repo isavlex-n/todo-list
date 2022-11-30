@@ -21,7 +21,7 @@ export default function TodoListItem({
         <input
           type="checkbox"
           checked={todo.checked}
-          onChange={() => checkedTodo(todo.id)}
+          onChange={() => checkedTodo(todo)}
           onClick={e => e.stopPropagation()}
         />
         <span
