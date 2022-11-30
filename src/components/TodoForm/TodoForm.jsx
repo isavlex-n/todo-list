@@ -65,7 +65,7 @@ export default function TodoForm({ submitHandler, submitText, todo }) {
       validationSchema={NewTodoSchema}
       onSubmit={submit}
     >
-      {({ touched, errors, isSubmitting, values }) => (
+      {() => (
         <Form className="form">
           <div className="form__group">
             <label htmlFor="title">Title:&nbsp;</label>
