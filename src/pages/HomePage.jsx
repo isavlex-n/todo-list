@@ -1,28 +1,26 @@
 import { Navigate } from 'react-router-dom'
-import { useDispatch } from 'react-redux'
-import { useAuth } from '../hooks/use-auth'
-import { removeUser } from '../store/slices/userSlice'
 import TodoList from '../components/TodoList'
+import { useContext } from 'react'
+import { AuthContext } from '../context/Auth'
+import { signOut, getAuth } from 'firebase/auth'
 
 const HomePage = () => {
-  const dispatch = useDispatch()
+  const { email } = useContext(AuthContext)
 
-  const { isAuth, email } = useAuth()
+  const logOut = () => {
+    const auth = getAuth()
+    signOut(auth)
+  }
 
-  return isAuth ? (
+  return (
     <div>
       <header className="text-right header">
-        <button
-          className="button button_red"
-          onClick={() => dispatch(removeUser())}
-        >
+        <button className="button button_red" onClick={() => logOut()}>
           Log out from {email}
         </button>
       </header>
       <TodoList />
     </div>
-  ) : (
-    <Navigate to="/login" />
   )
 }
 

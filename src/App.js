@@ -1,17 +1,23 @@
+import { Routes, Route } from 'react-router-dom'
+
 import HomePage from './pages/HomePage'
 import LoginPage from './pages/LoginPage'
 import RegisterPage from './pages/RegisterPage'
-import { Routes, Route} from 'react-router-dom'
 import './App.css'
-import TodoList from './components/TodoList'
+import { AuthProvider } from './context/Auth'
+import PrivateRoute from './components/PrivateRoute'
 
 function App() {
   return (
-    <Routes>
-      <Route exact path="/" element={<HomePage />} />
-      <Route exact path="/login" element={<LoginPage />} />
-      <Route exact path="/register" element={<RegisterPage />} />
-    </Routes>
+    <AuthProvider>
+      <Routes>
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
+        <Route path="/" element={<PrivateRoute />}>
+          <Route index element={<HomePage />} />
+        </Route>
+      </Routes>
+    </AuthProvider>
   )
 }
 

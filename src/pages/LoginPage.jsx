@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 
 const LoginPage = () => {
   return (
-    <div>
+    <div  className="max-80">
       <h1>Login</h1>
       <Login />
       <p>

@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 
 const RegisterPage = () => {
   return (
-    <div>
+    <div  className="max-80">
       <h1>Register</h1>
       <SignUp />
       <p>

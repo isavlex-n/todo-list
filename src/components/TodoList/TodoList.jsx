@@ -4,40 +4,35 @@ import TodoListItem from '../TodoListItem'
 import dayjs from 'dayjs'
 import Modal from '../Modal'
 import { database } from '../../firebase'
-import {
-  ref,
-  set,
-  onValue,
-  push,
-  child,
-  get,
-  update,
-  remove
-} from 'firebase/database'
-import { useAuth } from '../../hooks/use-auth'
+import { ref, set, onValue, push, update, remove } from 'firebase/database'
+import { useContext } from 'react'
+import { AuthContext } from '../../context/Auth'
 
 function TodoList() {
   const [todos, setTodos] = useState([])
   const [modal, setModal] = useState(false)
-  const { id } = useAuth()
+  const { uid } = useContext(AuthContext)
 
   useEffect(() => {
     fetchTodos()
   }, [])
 
   const fetchTodos = () => {
-    const userTodosRef = ref(database, `todos/${id}`)
+    const userTodosRef = ref(database, `todos/${uid}`)
     onValue(userTodosRef, (snapshot) => {
       const todosList = []
       snapshot.forEach((childSnapshot) => {
-        todosList.push({...childSnapshot.val(), id: childSnapshot.key})
+        todosList.push({
+          ...childSnapshot.val(),
+          id: childSnapshot.key,
+        })
       })
       setTodos(todosList)
     })
   }
 
   const createTodo = (values) => {
-    const userTodosRef = ref(database, `todos/${id}`)
+    const userTodosRef = ref(database, `todos/${uid}`)
     const newTodo = push(userTodosRef)
     values.checked = dayjs(values.completion).isBefore()
     set(newTodo, values)
@@ -45,18 +40,19 @@ function TodoList() {
   }
 
   const editTodo = (values, todoId) => {
-    const todoRef = ref(database, `todos/${id}/${todoId}`)
+    const todoRef = ref(database, `todos/${uid}/${todoId}`)
     update(todoRef, values)
   }
 
   const checkedTodo = (todo) => {
-    console.log(todo)
-    const todoRef = ref(database, `todos/${id}/${todo.id}`)
-    update(todoRef, {checked: !todo.checked})
+    const todoRef = ref(database, `todos/${uid}/${todo.id}`)
+    update(todoRef, {
+      checked: !todo.checked,
+    })
   }
 
   const deleteTodo = (todoId) => {
-    const todoRef = ref(database, `todos/${id}/${todoId}`)
+    const todoRef = ref(database, `todos/${uid}/${todoId}`)
     remove(todoRef)
   }
 
