@@ -1,8 +1,11 @@
-import React, { useEffect, useState, memo } from 'react'
+import React, { useEffect, useState, memo, createRef } from 'react'
 import TodoForm from '../TodoForm'
 import TodoListItem from '../TodoListItem'
 import dayjs from 'dayjs'
+import { CSSTransition, TransitionGroup } from 'react-transition-group'
+
 import Modal from '../Modal'
+import './TodoList.css'
 import { database } from '../../firebase'
 import { ref, set, onValue, push, update, remove } from 'firebase/database'
 import { useContext } from 'react'
@@ -20,14 +23,16 @@ function TodoList() {
   const fetchTodos = () => {
     const userTodosRef = ref(database, `todos/${uid}`)
     onValue(userTodosRef, (snapshot) => {
-      const todosList = []
       snapshot.forEach((childSnapshot) => {
-        todosList.push({
-          ...childSnapshot.val(),
-          id: childSnapshot.key,
-        })
+        setTodos((items) => [
+          ...items,
+          {
+            ...childSnapshot.val(),
+            id: childSnapshot.key,
+            nodeRef: createRef(null),
+          },
+        ])
       })
-      setTodos(todosList)
     })
   }
 
@@ -59,16 +64,26 @@ function TodoList() {
   return (
     <div>
       <ul className="todo-list">
-        {todos.map((todo) => (
-          <TodoListItem
-            todo={todo}
-            checkedTodo={checkedTodo}
-            editTodo={editTodo}
-            deleteTodo={deleteTodo}
-            key={todo.id}
-          />
-        ))}
+        <TransitionGroup>
+          {todos.map((todo) => (
+            <CSSTransition
+              key={todo.id}
+              timeout={500}
+              classNames="todo-list__item"
+              nodeRef={todo.nodeRef}
+            >
+              <TodoListItem
+                todo={todo}
+                checkedTodo={checkedTodo}
+                editTodo={editTodo}
+                deleteTodo={deleteTodo}
+                key={todo.id}
+              />
+            </CSSTransition>
+          ))}
+        </TransitionGroup>
       </ul>
+
       <button onClick={() => setModal(true)} className="button">
         Add todo
       </button>

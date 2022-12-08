@@ -29,7 +29,6 @@ export default function TodoForm({ submitHandler, submitText, todo }) {
   })
 
   const submit = (values, { resetForm }) => {
-    console.log(fileLink)
     values.file = fileLink
     submitHandler(values, todo?.id)
 

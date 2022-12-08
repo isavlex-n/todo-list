@@ -16,7 +16,7 @@ export default function TodoListItem({
     setModal(!modal)
   }
   return (
-    <li className="item" onClick={() => setModal(!modal)}>
+    <li className="item" onClick={() => setModal(!modal)} ref={todo.nodeRef}>
       <div className="item__group">
         <input
           type="checkbox"
