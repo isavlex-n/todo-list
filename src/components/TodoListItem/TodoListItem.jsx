@@ -29,7 +29,7 @@ export default function TodoListItem({
         >
           {todo.title}
         </span>
-        <button onClick={() => deleteTodo(todo.id)} className="button">Delete</button>
+        <button onClick={(e) => deleteTodo(e, todo.id)} className="button">Delete</button>
       </div>
       <Modal active={modal} setActive={setModal}>
         <TodoForm

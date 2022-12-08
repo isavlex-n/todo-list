@@ -23,16 +23,15 @@ function TodoList() {
   const fetchTodos = () => {
     const userTodosRef = ref(database, `todos/${uid}`)
     onValue(userTodosRef, (snapshot) => {
+      const todosList = []
       snapshot.forEach((childSnapshot) => {
-        setTodos((items) => [
-          ...items,
-          {
-            ...childSnapshot.val(),
-            id: childSnapshot.key,
-            nodeRef: createRef(null),
-          },
-        ])
+        todosList.push({
+          ...childSnapshot.val(),
+          id: childSnapshot.key,
+          nodeRef: createRef(null)
+        })
       })
+      setTodos(todosList)
     })
   }
 
@@ -56,7 +55,9 @@ function TodoList() {
     })
   }
 
-  const deleteTodo = (todoId) => {
+  const deleteTodo = (e, todoId) => {
+    console.log('here')
+    e.stopPropagation()
     const todoRef = ref(database, `todos/${uid}/${todoId}`)
     remove(todoRef)
   }
