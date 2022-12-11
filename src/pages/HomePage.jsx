@@ -14,7 +14,7 @@ const HomePage = () => {
 
   return (
     <div>
-      <header className="text-right header">
+      <header className="container text-right header">
         <button className="button button_red" onClick={() => logOut()}>
           Log out from {email}
         </button>

@@ -175,6 +175,7 @@ button:disabled {
 
 .container {
   max-width: 1280px;
+  padding: 1rem;
 }
 
 .todo-list {
@@ -191,12 +192,14 @@ button:disabled {
   color: white;
   text-decoration: none;
   font-weight: bold;
-  margin-bottom: 1rem;
   display: inline-block;
   line-height: initial;
   transition: background-color 200ms ease-in-out, border 200ms ease-in-out,
     transform 200ms ease-in-out;
   user-select: none;
+  &:hover {
+    opacity: 0.8;
+  }
 }
 
 .button_red {

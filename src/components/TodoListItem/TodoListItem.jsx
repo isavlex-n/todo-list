@@ -3,6 +3,15 @@ import dayjs from 'dayjs'
 import TodoForm from '../TodoForm'
 import Modal from '../Modal'
 import './TodoListItem.css'
+import { Reorder, useDragControls } from 'framer-motion'
+
+import Drag from '../../icons/Drag'
+
+const variants = {
+  initial: { opacity: 0, height: 0 },
+  animate: { opacity: 1, height: 'auto' },
+  exit: { opacity: 0, height: 0 },
+}
 
 export default function TodoListItem({
   todo,
@@ -15,22 +24,37 @@ export default function TodoListItem({
     editTodo(values, todo.id)
     setModal(!modal)
   }
+  const controls = useDragControls()
   return (
-    <li className="item" onClick={() => setModal(!modal)} ref={todo.nodeRef}>
-      <div className="item__group">
+    <Reorder.Item
+      value={todo}
+      dragControls={controls}
+      dragListener={false}
+      className="item"
+      {...variants}
+    >
+      <div className="item__group" onClick={() => setModal(!modal)}>
         <input
           type="checkbox"
           checked={todo.checked}
           onChange={() => checkedTodo(todo)}
-          onClick={e => e.stopPropagation()}
+          onClick={(e) => e.stopPropagation()}
         />
         <span
-          className={todo.checked || dayjs(todo.completion).isBefore() ? 'item__title done' : 'item__title'}
+          className={
+            todo.checked || dayjs(todo.completion).isBefore()
+              ? 'item__title done'
+              : 'item__title'
+          }
         >
           {todo.title}
         </span>
-        <button onClick={(e) => deleteTodo(e, todo.id)} className="button">Delete</button>
+
+        <button onClick={(e) => deleteTodo(e, todo.id)} className="button">
+          Delete
+        </button>
       </div>
+      <Drag dragControls={controls} />
       <Modal active={modal} setActive={setModal}>
         <TodoForm
           todo={todo}
@@ -39,6 +63,6 @@ export default function TodoListItem({
           setShow={setModal}
         />
       </Modal>
-    </li>
+    </Reorder.Item>
   )
 }

@@ -2,14 +2,14 @@ import React, { useEffect, useState, memo, createRef } from 'react'
 import TodoForm from '../TodoForm'
 import TodoListItem from '../TodoListItem'
 import dayjs from 'dayjs'
-import { CSSTransition, TransitionGroup } from 'react-transition-group'
-
+import { Reorder, AnimatePresence } from 'framer-motion'
 import Modal from '../Modal'
 import './TodoList.css'
 import { database } from '../../firebase'
 import { ref, set, onValue, push, update, remove } from 'firebase/database'
 import { useContext } from 'react'
 import { AuthContext } from '../../context/Auth'
+
 
 function TodoList() {
   const [todos, setTodos] = useState([])
@@ -28,7 +28,7 @@ function TodoList() {
         todosList.push({
           ...childSnapshot.val(),
           id: childSnapshot.key,
-          nodeRef: createRef(null)
+          nodeRef: createRef(null),
         })
       })
       setTodos(todosList)
@@ -63,29 +63,26 @@ function TodoList() {
   }
 
   return (
-    <div>
-      <ul className="todo-list">
-        <TransitionGroup>
+    <div className="container">
+      <Reorder.Group axis="y" onReorder={setTodos} values={todos}>
+        <AnimatePresence>
           {todos.map((todo) => (
-            <CSSTransition
+            <TodoListItem
+              todo={todo}
+              checkedTodo={checkedTodo}
+              editTodo={editTodo}
+              deleteTodo={deleteTodo}
               key={todo.id}
-              timeout={500}
-              classNames="todo-list__item"
-              nodeRef={todo.nodeRef}
-            >
-              <TodoListItem
-                todo={todo}
-                checkedTodo={checkedTodo}
-                editTodo={editTodo}
-                deleteTodo={deleteTodo}
-                key={todo.id}
-              />
-            </CSSTransition>
+            />
           ))}
-        </TransitionGroup>
-      </ul>
+        </AnimatePresence>
+      </Reorder.Group>
 
-      <button onClick={() => setModal(true)} className="button">
+      <button
+        onClick={() => setModal(true)}
+        className="button"
+        style={{ marginTop: '10px' }}
+      >
         Add todo
       </button>
       <Modal active={modal} setActive={setModal}>
